@@ -40,8 +40,8 @@ class ChatServer(object):
     def get_client_name(self, client):
         """ Return the name of the client """
         info = self.clientmap[client]
-        host, name = info[0][0], info[1]
-        return '@'.join((name, host))
+        user_name = info[1]
+        return user_name
 
     def run(self):
         inputs = [self.server]
@@ -71,7 +71,7 @@ class ChatServer(object):
 
                     self.clientmap[client] = (address, cname)
                     # Send joining information to other clients
-                    msg = f'\n(Connected: New client ({self.clients}) from {self.get_client_name(client)})'
+                    msg = f'\n************** New client connected: {self.get_client_name(client)} **************'
                     for output in self.outputs:
                         send(output, msg)
                     self.outputs.append(client)
@@ -82,7 +82,7 @@ class ChatServer(object):
                         data = receive(sock)
                         if data:
                             # Send as new client's message...
-                            msg = f'\n#[{self.get_client_name(sock)}]>> {data}'
+                            msg = f'\n{self.get_client_name(sock)}: {data}'
 
                             # Broadcast message to other clients
                             for output in self.outputs:
@@ -110,12 +110,10 @@ class ChatServer(object):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description='Socket server for assignment 2')
-    parser.add_argument('--name', action="store", dest="name", required=True)
-    parser.add_argument('--port', action="store",
-                        dest="port", type=int, required=True)
+    parser.add_argument('--port', action="store", dest="port", type=int, required=True)
     given_args = parser.parse_args()
+
     port = given_args.port
-    name = given_args.name
 
     server = ChatServer(port)
     server.run()

@@ -27,14 +27,15 @@ class ChatClient():
         self.host = host
         self.port = port
 
-        # Initial prompt
-        self.prompt = f'[{name}@{socket.gethostname()}]> '
+        # Initialize command window prompt
+        self.prompt = f'{name}: '
 
         # Connect to server at port
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.sock.connect((host, self.port))
-            print(f'Now connected to chat server@ port {self.port}')
+            print(f'************** Connected to server **************')
+            print()
             self.connected = True
 
             # Send client name
@@ -43,7 +44,7 @@ class ChatClient():
 
             # Set client address
             addr = data.split('CLIENT: ')[1]
-            self.prompt = '[' + '@'.join((self.name, addr)) + ']> '
+            #self.prompt = '[' + '@'.join((self.name, addr)) + ']> '
 
             threading.Thread(target=get_and_send, args=(self,)).start()
 
@@ -86,13 +87,12 @@ class ChatClient():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--name', action="store", dest="name", required=True)
-    parser.add_argument('--port', action="store",
-                        dest="port", type=int, required=True)
+    parser.add_argument('--port', action="store", dest="port", type=int, required=True)
     given_args = parser.parse_args()
 
     port = given_args.port
-    name = given_args.name
+    user_name = input("Please enter your name: ")
+    print(f"Welcome, {user_name}!")
 
-    client = ChatClient(name=name, port=port)
+    client = ChatClient(name=user_name, port=port)
     client.run()
