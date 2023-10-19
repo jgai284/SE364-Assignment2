@@ -28,6 +28,7 @@ class ChatServer(object):
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind((SERVER_HOST, port))
         self.server.listen(backlog)
+        self.server = self.context.wrap_socket(self.server, server_side=True)
 
         signal.signal(signal.SIGINT, self.erase_connection)
 
