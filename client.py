@@ -1,4 +1,5 @@
 import argparse
+import ssl
 import sys
 import threading
 
@@ -27,12 +28,17 @@ class ChatClient():
         self.host = host
         self.port = port
 
+        # Impose encryption
+        self.context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        self.context.set_ciphers('AES128-SHA')
+
         # Initialize command window prompt
         self.prompt = f'{name}: '
 
         # Connect to server at port
         try:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock = self.context.wrap_socket(self.sock, server_hostname=host)
             self.sock.connect((host, self.port))
             print(f'************** Connected to server **************')
             print()
@@ -41,10 +47,6 @@ class ChatClient():
             # Send client name
             send(self.sock, 'NAME: ' + self.name)
             data = receive(self.sock)
-
-            # Set client address
-            addr = data.split('CLIENT: ')[1]
-            #self.prompt = '[' + '@'.join((self.name, addr)) + ']> '
 
             threading.Thread(target=get_and_send, args=(self,)).start()
 

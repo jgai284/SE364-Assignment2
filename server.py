@@ -1,5 +1,6 @@
 import argparse
 import signal
+import ssl
 import sys
 
 import select
@@ -16,6 +17,13 @@ class ChatServer(object):
         self.clients = 0
         self.clientmap = {}
         self.outputs = []
+
+        # Impose encryption
+        self.context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+        self.context.load_cert_chain(certfile="cert.pem", keyfile="cert.pem")
+        self.context.load_verify_locations('cert.pem')
+        self.context.set_ciphers('AES128-SHA')
+
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server.bind((SERVER_HOST, port))
