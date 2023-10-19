@@ -1,7 +1,8 @@
-import select
-import sys
-import signal
 import argparse
+import signal
+import sys
+
+import select
 
 from communication import *
 
@@ -9,7 +10,7 @@ SERVER_HOST = 'localhost'
 
 
 class ChatServer(object):
-    """initialize attributes"""
+    """Initialize attributes"""
 
     def __init__(self, port, backlog=5):
         self.clients = 0
@@ -24,7 +25,7 @@ class ChatServer(object):
 
         print(f'Server listening to port: {port} ...')
 
-    """initialize functions"""
+    """Initialize functions"""
 
     def erase_connection(self, signum, frame):
         """Erasing client connections"""
